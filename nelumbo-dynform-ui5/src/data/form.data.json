@@ -1,0 +1,60 @@
+{
+	"id": 124124,
+	"formName": "LAC",
+	"data": 
+	{
+		"MainGroup": 
+		{
+			"childNode": {
+				"CCNo": {
+					"value": "908098"
+				},
+				"Country": {
+					"value": "de"
+				},
+				"SKU": {
+					"value": "0909012"
+				},
+				"ProductName": {
+					"value": "Merck super medicine"
+				},
+				"Customer": {
+					"value":"000001"
+				},
+				"ImplDate": {
+					"value": "2019-01-01"
+				},
+				"Plant": {
+					"value": "F1"
+				}
+			}
+			
+		},
+		"BOMList": {
+			"childNodeList": [
+					{
+						"Position": {
+							"value": "Hallo"
+						},
+						"PackMatNew": {
+							"value": "070987098"
+						},
+						"PackMatOld": {
+							"value": "070987099"
+						}
+					},
+					{
+						"Position": {
+							"value": "Hallo2"
+						},
+						"PackMatNew": {
+							"value": "070987098"
+						},
+						"PackMatOld": {
+							"value": "070987099"
+						}
+					}
+			]
+		}
+	}
+}

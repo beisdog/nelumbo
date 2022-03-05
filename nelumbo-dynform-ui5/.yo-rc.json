@@ -1,0 +1,14 @@
+{
+  "generator-ui5-ts-app": {
+    "application": "dynamicform",
+    "namespace": "com.deep",
+    "framework": "OpenUI5",
+    "frameworkVersion": "1.99.0",
+    "author": "David Beisert",
+    "tstypes": "@openui5/ts-types-esm",
+    "tstypesVersion": "1.99.0",
+    "appId": "com.deep.dynamicform",
+    "appURI": "com/deep/dynamicform",
+    "setupCompleted": true
+  }
+}
