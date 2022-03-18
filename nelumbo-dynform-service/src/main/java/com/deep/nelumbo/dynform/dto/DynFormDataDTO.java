@@ -55,7 +55,8 @@ import java.util.Map;
 public class DynFormDataDTO {
 
     private String id;
-    private String task;
+    private String formConfigId;
+    private String state;
 
     //@JsonSerialize(as = LinkedHashMap.class)
     private DynFormDataNodeDTO data = new DynFormDataNodeDTO();

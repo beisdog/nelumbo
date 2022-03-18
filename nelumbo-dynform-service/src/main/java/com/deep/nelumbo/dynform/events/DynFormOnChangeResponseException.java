@@ -1,22 +1,23 @@
 package com.deep.nelumbo.dynform.events;
 
-public class DynFormOnChangeResponseException extends javax.ws.rs.BadRequestException{
-	
-	private static final long serialVersionUID = 1L;
-	
-	private DynFormOnChangeResponse response;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpStatusCodeException;
 
-	public DynFormOnChangeResponseException(DynFormOnChangeResponse response) {
-		super();
-		this.response = response;
-	}
+public class DynFormOnChangeResponseException extends HttpStatusCodeException {
 
-	public DynFormOnChangeResponse getDynFormOnChangeResponse() {
-		return response;
-	}
+    private DynFormOnChangeResponse response;
 
-	public void setDynFormOnChangeResponse(DynFormOnChangeResponse response) {
-		this.response = response;
-	}
+    public DynFormOnChangeResponseException(HttpStatus code, DynFormOnChangeResponse response) {
+        super(code);
+        this.response = response;
+    }
+
+    public DynFormOnChangeResponse getDynFormOnChangeResponse() {
+        return response;
+    }
+
+    public void setDynFormOnChangeResponse(DynFormOnChangeResponse response) {
+        this.response = response;
+    }
 
 }

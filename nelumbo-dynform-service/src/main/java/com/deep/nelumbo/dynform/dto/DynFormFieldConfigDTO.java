@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 public class DynFormFieldConfigDTO {
 
-    String task;
+    String state;
     String elementId;
     String parentElementId;
     String label;
@@ -23,6 +23,7 @@ public class DynFormFieldConfigDTO {
     Boolean editable;
     Boolean visible;
     Boolean required;
+    Integer length;
     List<KeyValueDTO> values = null;
     String valueProvider;
     DynFormConfigNodeDTO children = new DynFormConfigNodeDTO();

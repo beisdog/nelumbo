@@ -1,6 +1,6 @@
 package com.deep.nelumbo.dynform.dto;
 
-import com.deep.nelumbo.dynform.entity.DynFormValue;
+import com.deep.nelumbo.dynform.entity.DynFormValueEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -23,7 +23,7 @@ public class FieldMessage extends Message {
         this.message = message;
     }
 
-    public FieldMessage(DynFormValue val, String message) {
+    public FieldMessage(DynFormValueEntity val, String message) {
         this(val.getElementId(), val.getIndex(), message);
     }
 }

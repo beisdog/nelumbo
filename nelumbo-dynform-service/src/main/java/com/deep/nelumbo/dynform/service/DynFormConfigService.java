@@ -3,8 +3,15 @@ package com.deep.nelumbo.dynform.service;
 import com.deep.nelumbo.dynform.dto.DynFormConfigDTO;
 import com.deep.nelumbo.dynform.dto.DynFormConfigNodeDTO;
 import com.deep.nelumbo.dynform.dto.DynFormFieldConfigDTO;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.deep.nelumbo.dynform.dto.KeyValueDTO;
+import com.deep.nelumbo.dynform.entity.DynFormConfigEntity;
+import com.deep.nelumbo.dynform.entity.DynFormFieldConfigEntity;
+import com.deep.nelumbo.dynform.entity.KeyValueEntity;
+import com.deep.nelumbo.dynform.repo.DynFormConfigRepo;
+import com.deep.nelumbo.dynform.repo.DynFormFieldConfigRepo;
+import com.deep.nelumbo.dynform.repo.KeyValueRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +22,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Responsible for reading the dynamic form configuration and assembling the DTOs.
@@ -24,9 +32,14 @@ import java.util.Map;
  */
 @Service
 @Transactional(propagation = Propagation.REQUIRES_NEW)
+@RequiredArgsConstructor
 public class DynFormConfigService {
 
     private final static String DEFAULT = "DEFAULT";
+
+    private final DynFormConfigRepo formConfigRepo;
+    private final DynFormFieldConfigRepo fieldConfigRepo;
+    private final KeyValueRepo keyValueRepo;
 
     /**
      * Load the form configuration from the brm table and convert the table structure to a
@@ -35,18 +48,16 @@ public class DynFormConfigService {
      * @return the dto
      */
 
-    public DynFormConfigDTO getFormConfig(RuleLocationConfigDynForm parameterObject, String task) {
+    public DynFormConfigDTO getFormConfig(String formConfigId, String state) {
         final DynFormConfigDTO result = new DynFormConfigDTO();
-        result.setId(parameterObject.getFormName());
-        result.setTask(task);
-        result.setFormConfigParameter(parameterObject);
+        result.setId(formConfigId);
+        result.setState(state);
         final DynFormConfigNodeDTO elements = new DynFormConfigNodeDTO();
         result.setElements(elements);
 
         // first step put all fields into a map for easy access
         final Map<String, DynFormFieldConfigDTO> fieldDtoMap = this.getFormConfigAsMap(
-                parameterObject,
-                task
+                formConfigId, state
         );
         // second step assign children to the parents
         for (final DynFormFieldConfigDTO field : fieldDtoMap.values()) {
@@ -54,7 +65,7 @@ public class DynFormConfigService {
             final String parentId = field.getParentElementId();
             final DynFormFieldConfigDTO dto = fieldDtoMap.get(elementId);
             if (dto != null) {
-                if (parentId != null && !parameterObject.getFormName().equals(parentId)) {
+                if (parentId != null && !formConfigId.equals(parentId)) {
                     final DynFormFieldConfigDTO parentDto = fieldDtoMap.get(parentId);
                     if (parentDto != null) {
                         parentDto.getChildren().setFieldConfig(elementId, dto);
@@ -69,42 +80,40 @@ public class DynFormConfigService {
     }
 
     public Map<String, DynFormFieldConfigDTO> getFormConfigAsMap(
-            RuleLocationConfigDynForm parameterObject,
-            String task
+            String formConfigId,
+            String state
     ) {
 
         Map<String, DynFormFieldConfigDTO> resultMap = new LinkedHashMap<String, DynFormFieldConfigDTO>();
         // First load the default values. They can be overridden then by the specific values.
-        if (!DEFAULT.equalsIgnoreCase(task.trim())) {
+        if (!DEFAULT.equalsIgnoreCase(state)) {
             //resultMap = getFormConfigAsMap(parameterObject.getFormName(), DEFAULT);
 
-            this.addFormConfigToMap(parameterObject, DEFAULT, resultMap);
+            this.addFormConfigToMap(formConfigId, DEFAULT, resultMap);
         }
-        return this.addFormConfigToMap(parameterObject, task, resultMap);
+        return this.addFormConfigToMap(formConfigId, state, resultMap);
     }
 
     private Map<String, DynFormFieldConfigDTO> addFormConfigToMap(
-            RuleLocationConfigDynForm parameterObject,
-            String task,
+            String formConfigId,
+            String state,
             Map<String, DynFormFieldConfigDTO> resultMap
     ) {
-        final List<DynFormToField> forms =
-                this.rulesInvoker.getFormFieldsByFormName(parameterObject, task, new Integer(0));
+        final List<DynFormFieldConfigEntity> fields = this.fieldConfigRepo.findByFormConfigIdAndState(formConfigId, state);
         // first step put all fields into a map for easy access
 
-        final List<DynFormToField.FormField> parentFields = new ArrayList<DynFormToField.FormField>();
-        for (final DynFormToField form : forms) {
-            for (final DynFormToField.FormField field : form.getFields()) {
-                // if element starts with * it means that it shall inherit the fields from another task
-                // e.g. *INITIAL means get the information from the task "INITIAL"
-                if (field.getElementId().startsWith("*")) {
-                    parentFields.add(field);
-                } else {
-                    final String elementId = field.getElementId();
-                    final DynFormFieldConfigDTO dto = new DynFormFieldConfigDTO();
-                    dto.setTask(form.getTask());
-                    dto.setParentElementId(field.getParentElementId());
-                    dto.setElementId(field.getElementId());
+        final List<DynFormFieldConfigEntity> parentFields = new ArrayList<>();
+        for (final DynFormFieldConfigEntity field : fields) {
+            // if element starts with * it means that it shall inherit the fields from another task
+            // e.g. *INITIAL means get the information from the task "INITIAL"
+            if (field.getElementId().startsWith("*")) {
+                parentFields.add(field);
+            } else {
+                final String elementId = field.getElementId();
+                final DynFormFieldConfigDTO dto = new DynFormFieldConfigDTO();
+                dto.setState(field.getState());
+                dto.setParentElementId(field.getParentElementId());
+                dto.setElementId(field.getElementId());
                     dto.setLabel(field.getLabel());
                     dto.setType(field.getType());
                     dto.setEditable(field.getEditable());
@@ -114,28 +123,27 @@ public class DynFormConfigService {
                     final String valueProvider = field.getValueProvider();
                     if (valueProvider != null) {
                         // RuleSetLocation rulesLocation = new RuleSetLocation(parameterObject.getBrmDcName(), parameterObject.getRulesetNameValueSet());
-                        this.resolveValueProvider(parameterObject, dto, valueProvider);
+                        this.resolveValueProvider(dto, valueProvider);
                     }
                     dto.setValueProvider(field.getValueProvider());
                     resultMap.put(elementId, dto);
                 }
-            }
             // Get the parent fieldconfigs from the parent but only add if they do not exist yet
-            for (DynFormToField.FormField f : parentFields) {
+            for (DynFormFieldConfigEntity f : parentFields) {
                 // get the list children after the *, example *INITIAL-> INITIAL
-                String parentTask = f.getElementId().substring(1);
-                if (parentTask.equals(task)) {
+                String parentState = f.getElementId().substring(1);
+                if (parentState.equals(state)) {
                     throw new IllegalStateException(
-                            "You have created an endless loop. The row: task=" + f.getFormToField()
-                                    .getTask() + " position=" + f.getFormToField().getPosition()
-                                    + " references the same parent task: " + task);
+                            "You have created an endless loop. The row: state=" + f
+                                    .getState() + " position=" + f.getPosition()
+                                    + " references the same parent task: " + state);
                 }
                 Map<String, DynFormFieldConfigDTO> parentTasks = new LinkedHashMap<String, DynFormFieldConfigDTO>();
-                this.addFormConfigToMap(parameterObject, parentTask, parentTasks);
+                this.addFormConfigToMap(formConfigId, parentState, parentTasks);
                 for (DynFormFieldConfigDTO child : parentTasks.values()) {
                     // parent elements only override DEFAULT values
                     DynFormFieldConfigDTO existing = resultMap.get(child.getElementId());
-                    if (existing == null || DEFAULT.equalsIgnoreCase(existing.getTask())) {
+                    if (existing == null || DEFAULT.equalsIgnoreCase(existing.getState())) {
                         resultMap.put(child.getElementId(), child);
                     }
                 }
@@ -152,7 +160,6 @@ public class DynFormConfigService {
      * @param valueProvider
      */
     private void resolveValueProvider(
-            RuleLocationConfigDynForm configParameter,
             DynFormFieldConfigDTO dto,
             String valueProvider
     ) {
@@ -171,21 +178,13 @@ public class DynFormConfigService {
         }
         if (valueProvider.startsWith("VS:")) {
             final String vsString = valueProvider.substring("VS:".length());
-            final List<ValueSetToValues> vsList = this.vsRulesInvoker
-                    .getValueset(
-                            configParameter.getBrmDcName(),
-                            configParameter.getRulesetNameValueSet(),
-                            vsString,
-                            0
-                    );
+            final List<KeyValueEntity> vsList = this.keyValueRepo.findByType(vsString);
             final List<KeyValueDTO> kvs = new ArrayList<KeyValueDTO>();
-            for (final ValueSetToValues vs : vsList) {
-                for (final Value v : vs.getValues()) {
-                    final KeyValueDTO kvDto = new KeyValueDTO();
-                    kvDto.setKey(v.getKey());
-                    kvDto.setValue(v.getValue());
-                    kvs.add(kvDto);
-                }
+            for (final KeyValueEntity v : vsList) {
+                final KeyValueDTO kvDto = new KeyValueDTO();
+                kvDto.setKey(v.getKey());
+                kvDto.setValue(v.getValue());
+                kvs.add(kvDto);
             }
             dto.setValues(kvs);
         }
@@ -194,7 +193,6 @@ public class DynFormConfigService {
     /**
      * Just for easy testing to get a dummy FormConfig without hitting the BRM.
      */
-    @Override
     public DynFormConfigDTO getTestFormConfig() {
         DynFormConfigDTO result = new DynFormConfigDTO();
         final ObjectMapper mapper = new ObjectMapper();
@@ -202,22 +200,49 @@ public class DynFormConfigService {
         try {
             result = mapper.readValue(in, DynFormConfigDTO.class);
         } catch (final IOException e) {
-            throw new EJBException(e);
+            throw new IllegalStateException(e);
         }
         return result;
     }
 
-    /**
-     * Quick test
-     *
-     * @param args
-     * @throws JsonProcessingException
-     */
-    public static void main(String[] args) throws JsonProcessingException {
-        final DynFormConfigDTO formConfig = new DynFormConfigService().getTestFormConfig();
-        System.out.println("FormConfig: " + formConfig);
-        final ObjectMapper mapper = new ObjectMapper();
-        final String json = mapper.writeValueAsString(formConfig);
-        System.out.println(json);
+    public DynFormConfigEntity save(DynFormConfigDTO formConfig) {
+
+        DynFormConfigEntity formConfigEntity = new DynFormConfigEntity();
+        formConfigEntity.setId(formConfig.getId());
+        String state = formConfig.getState();
+        var parentNode = formConfig.getElements();
+        createFieldConfigEntitiesFromNode(formConfigEntity, state, Optional.empty(), parentNode);
+        return this.formConfigRepo.save(formConfigEntity);
     }
+
+    private void createFieldConfigEntitiesFromNode(DynFormConfigEntity formConfigEntity, String state, Optional<String> parentElementId, DynFormConfigNodeDTO node) {
+        var fieldConfigMap = node.getFieldConfigMap();
+        int position = 0;
+        for (var entry : fieldConfigMap.entrySet()) {
+            position++;
+            String elementId = entry.getKey();
+            var fieldConfig = entry.getValue();
+            createFieldConfigEntity(formConfigEntity, state, position, entry.getKey(), parentElementId, fieldConfig);
+            createFieldConfigEntitiesFromNode(formConfigEntity, state, Optional.of(elementId), fieldConfig.getChildren());
+        }
+    }
+
+    private void createFieldConfigEntity(DynFormConfigEntity formConfigEntity, String state, Integer position, String elementId, Optional<String> parentElementId, DynFormFieldConfigDTO src) {
+        var target = new DynFormFieldConfigEntity();
+        target.setFormConfigId(formConfigEntity.getId());
+        target.setParentElementId(parentElementId.orElse(null));
+        target.setElementId(elementId);
+        target.setEnabled(src.getEnabled());
+        target.setEditable(src.getEditable());
+        target.setLabel(src.getLabel());
+        target.setState(state);
+        target.setRequired(src.getRequired());
+        target.setType(src.getType());
+        target.setLength(src.getLength());
+        target.setPosition(position);
+        target.setValueProvider(src.getValueProvider());
+        target.setVisible(src.getVisible());
+        formConfigEntity.getFieldConfigs().add(target);
+    }
+
 }

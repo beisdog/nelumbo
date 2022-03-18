@@ -6,8 +6,13 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * A collection of {@link DynFormFieldValueLineItemDTO}s.
@@ -21,6 +26,7 @@ public class DynFormDataNodeDTO {
 
     private NodeUIState uiState;
 
+    @JsonIgnore
     private Map<String, DynFormFieldDTO> map = new LinkedHashMap<String, DynFormFieldDTO>();
 
     public DynFormDataNodeDTO() {

@@ -11,7 +11,7 @@ import lombok.Data;
 public class DynFormConfigDTO {
 
     private String id;
-    private String task;
+    private String state;
     private DynFormConfigNodeDTO elements = new DynFormConfigNodeDTO();
 
     public DynFormFieldConfigDTO getFormConfigByElementId(String elementId) {
