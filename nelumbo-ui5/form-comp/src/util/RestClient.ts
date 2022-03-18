@@ -1,4 +1,4 @@
-import { Deferred } from "jquery";
+import {Deferred} from "jquery";
 import User from "./User";
 
 export interface StartDeferred extends Deferred {
@@ -13,8 +13,8 @@ export default class RestClient {
     private getMethod = "GET";
     private postMethod = "POST";
 
-    public MOCK_USER: User; 
-    private _baseUrl: string;
+	public MOCK_USER: User;
+	private _baseUrl: string;
 
     get baseUrl(): string {
         return this._baseUrl;
@@ -50,22 +50,22 @@ export default class RestClient {
 			var def: StartDeferred = $.Deferred() as StartDeferred;
 			var dataAccess = this;
 			def.start = function() {
-				$.ajax( 
-                    sUrl,
-                    {
-					cache : false,
-					url : sUrl,
-					type : dataAccess.postMethod,
-					dataType: "json",
-					contentType: "application/json",
-					async : true,
-					data : dataAccess._encodeDataForPost(oObject),
-					processData : true,
+				$.ajax(
+					sUrl,
+					{
+						cache: false,
+						url: sUrl,
+						type: dataAccess.postMethod,
+						dataType: "json",
+						contentType: "application/json",
+						async: true,
+						data: dataAccess._encodeDataForPost(oObject),
+						processData: true,
 					success : function(data, textStatus, jxHR) {
 						if(def.mapResult) {
 							def.resolve(def.mapResult(data));
 						}else {
-							def.resolve(data);	
+							def.resolve(data);
 						}
 					},
 					error : function(jxHR, textStatus, errorThrown) {
@@ -74,7 +74,7 @@ export default class RestClient {
 				});
 				return this;
 			};
-			return def;	
+		return def;
 		}
 	_encodeDataForPost(oObject: any): string {
 		return JSON.stringify(oObject);
@@ -102,9 +102,9 @@ export default class RestClient {
 				success : function(data, textStatus, jxHR) {
 					if(def.mapResult) {
 						def.resolve(def.mapResult(data));
-					} 
+					}
 					else {
-						def.resolve(data);	
+						def.resolve(data);
 					}
 				},
 				error : function(jxHR, textStatus, errorThrown) {
@@ -112,7 +112,7 @@ export default class RestClient {
 						def.reject(jxHR, textStatus, def.mapError(errorThrown));
 					}
 					else {
-						def.reject(jxHR, textStatus, errorThrown);	
+						def.reject(jxHR, textStatus, errorThrown);
 					}
 				}
 			});
@@ -122,5 +122,5 @@ export default class RestClient {
 	}
 	_encodeDataForGet(sData: string): string {
 		return sData;
-	}	
+	}
 }

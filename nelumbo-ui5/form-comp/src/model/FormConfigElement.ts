@@ -1,6 +1,6 @@
 
 export enum FormConfigElementType {
-    StringInputField = "StringInputField",
+    StringInpu5tField = "StringInputField",
     MultiInputField = "MultiInputField",
     Checkbox = "Checkbox",
     DateInputField = "DateInputField",

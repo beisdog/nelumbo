@@ -1,4 +1,4 @@
-import { PropertyBindingInfo } from "sap/ui/base/ManagedObject";
+import {PropertyBindingInfo} from "sap/ui/base/ManagedObject";
 import Model from "sap/ui/model/Model";
 
 export default class DynFormHelper {
@@ -21,8 +21,8 @@ export default class DynFormHelper {
 		return "{=("
 			+ "${formData>" + sCurrentDataPath +"/uiState}.hasOwnProperty('values')?"
 			+ "(${formData>" + sCurrentDataPath +"/uiState/values} !== null ?true: (${formConfig>" + sCurrentConfigPath +"/values} !== null? true: false)):"
-			+ "(${formConfig>" + sCurrentConfigPath +"/values} !== null? true: false)" 
-			+ ")}";	
+			+ "(${formConfig>" + sCurrentConfigPath +"/values} !== null? true: false)"
+			+ ")}";
 	},*/
 	getUiStateExpressionBinding(sCurrentDataPath: string, sCurrentConfigPath: string, sProperty: string): PropertyBindingInfo {
 		return {
@@ -50,7 +50,7 @@ export default class DynFormHelper {
 
 		/*return "{= (${formData>uiState/" + sProperty + "} !== undefined ? "
 			+ "${formData>uiState/" + sProperty + "} :  "
-			+ "${formConfig>" + sCurrentConfigPath +"/" + sConfigProperty + "})}";	
+			+ "${formConfig>" + sCurrentConfigPath +"/" + sConfigProperty + "})}";
 			*/
 	}
 

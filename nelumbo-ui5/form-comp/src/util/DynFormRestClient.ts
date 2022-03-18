@@ -1,4 +1,4 @@
-import RestClient, { StartDeferred } from "./RestClient";
+import RestClient, {StartDeferred} from "./RestClient";
 
 
 export default class DynFormRestClient extends RestClient {

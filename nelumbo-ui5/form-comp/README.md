@@ -1,10 +1,23 @@
 # dynamicform
 
+https://blogs.sap.com/2021/07/01/getting-started-with-typescript-for-ui5-application-development/
+
+```
+npm install -g yo generator-easy-ui5
+yo --generators
+npm info generator-easy-ui5 <version>
+yo easy-ui5 ts-app
+```
+
 ## Description
 
 This app demonstrates a TypeScript setup for developing UI5 applications.
 
-**The template is inspired by the [`SAP-samples/ui5-typescript-helloworld`](https://github.com/SAP-samples/ui5-typescript-helloworld) project which also contains [a detailed step-by-step guide](https://github.com/SAP-samples/ui5-typescript-helloworld/blob/main/step-by-step.md). It explains how this setup is created and how all the bits and pieces fit together.**
+**The template is inspired by
+the [`SAP-samples/ui5-typescript-helloworld`](https://github.com/SAP-samples/ui5-typescript-helloworld)
+project which also
+contains [a detailed step-by-step guide](https://github.com/SAP-samples/ui5-typescript-helloworld/blob/main/step-by-step.md)
+. It explains how this setup is created and how all the bits and pieces fit together.**
 
 | :point_up: Overview of TypeScript-related Entities |
 |:---------------------------|

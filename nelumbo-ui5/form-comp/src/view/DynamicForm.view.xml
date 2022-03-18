@@ -1,0 +1,9 @@
+<mvc:View
+		xmlns:mvc="sap.ui.core.mvc"
+		xmlns="sap.m"
+		xmlns:l="sap.ui.layout"
+		controllerName="com.deep.dynamicform.controller.DynamicForm"
+>
+	<l:VerticalLayout id="Page1">
+	</l:VerticalLayout>
+</mvc:View>

@@ -1,11 +1,9 @@
-import Object from "sap/ui/base/Object";
-import ResourceModel from "sap/ui/model/resource/ResourceModel";
 import MessageBox from "sap/m/MessageBox";
 import BusyIndicator from "sap/ui/core/BusyIndicator";
 import UIComponent from "sap/ui/core/UIComponent";
 import Dialog from "sap/m/Dialog";
 import Text from "sap/m/Text";
-import { ValueState } from "sap/ui/core/library";
+import {ValueState} from "sap/ui/core/library";
 import JSONModel from "sap/ui/model/json/JSONModel";
 
 interface CustomJqXHRequestOption {
@@ -29,7 +27,7 @@ export default class ErrorHandler {
 
     public getText(sMessage: string): string {
         return sMessage;
-        //this.oResourceModel.getResourceBundle().getText(sMessage);	
+        //this.oResourceModel.getResourceBundle().getText(sMessage);
     }
 
     public showGeneralErrorMessage(message: string): void {

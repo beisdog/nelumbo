@@ -1,13 +1,13 @@
-import Button, { $ButtonSettings } from "sap/m/Button";
+import Button, {$ButtonSettings} from "sap/m/Button";
 import CheckBox from "sap/m/CheckBox";
-import Column, { $ColumnSettings } from "sap/m/Column";
+import Column, {$ColumnSettings} from "sap/m/Column";
 import ColumnListItem from "sap/m/ColumnListItem";
 import DatePicker from "sap/m/DatePicker";
-import Input, { $InputSettings } from "sap/m/Input";
+import Input, {$InputSettings} from "sap/m/Input";
 import InputBase from "sap/m/InputBase";
 import Label from "sap/m/Label";
-import MessageBox, { Icon } from "sap/m/MessageBox";
-import MultiInput, { $MultiInputSettings } from "sap/m/MultiInput";
+import MessageBox, {Icon} from "sap/m/MessageBox";
+import MultiInput, {$MultiInputSettings} from "sap/m/MultiInput";
 import OverflowToolbar from "sap/m/OverflowToolbar";
 import Page from "sap/m/Page";
 import StandardListItem from "sap/m/StandardListItem";
@@ -15,7 +15,7 @@ import Table from "sap/m/Table";
 import Token from "sap/m/Token";
 import Toolbar from "sap/m/Toolbar";
 import Event from "sap/ui/base/Event";
-import { $CheckBoxSettings } from "sap/ui/commons/CheckBox";
+import {$CheckBoxSettings} from "sap/ui/commons/CheckBox";
 import Control from "sap/ui/core/Control";
 import Item from "sap/ui/core/Item";
 import ListItem from "sap/ui/core/ListItem";
@@ -23,12 +23,16 @@ import Form from "sap/ui/layout/form/Form";
 import FormContainer from "sap/ui/layout/form/FormContainer";
 import FormElement from "sap/ui/layout/form/FormElement";
 import ResponsiveGridLayout from "sap/ui/layout/form/ResponsiveGridLayout";
-import Context from "sap/ui/model/Context";
 import Filter from "sap/ui/model/Filter";
 import FilterOperator from "sap/ui/model/FilterOperator";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import DynamicFormComponent from "../Component";
-import { FormConfigElement, FormConfigElementType, KeyValue, KeyWithFormConfigElement } from "../model/FormConfigElement";
+import {
+    FormConfigElement,
+    FormConfigElementType,
+    KeyValue,
+    KeyWithFormConfigElement
+} from "../model/FormConfigElement";
 import DynFormHelper from "../util/DynFormHelper";
 import BaseController from "./BaseController";
 
@@ -47,7 +51,7 @@ export default class DynamicForm extends BaseController {
      * available) are already created. Can be used to modify the View before
      * it is displayed, to bind event handlers and do other one-time
      * initialization.
-     * 
+     *
      * @memberOf DynFormComponent.DynFormComponent.view.view.DynamicForm
      */
     onInit(): void {
@@ -60,7 +64,7 @@ export default class DynamicForm extends BaseController {
      * builds the form according to the formConfig model and formData model.
      */
     buildFormFromModel(oFormConfigModel: JSONModel) {
-        if (oFormConfigModel.getData().formId !== undefined && oFormConfigModel.getData().formId != this.lastFormName) {
+        if (oFormConfigModel.getData().id !== undefined && oFormConfigModel.getData().id != this.lastFormName) {
             try {
                 let oPage = this.getView().byId("Page1") as Page;
                 let oFormConfigData = oFormConfigModel.getData();
@@ -75,7 +79,7 @@ export default class DynamicForm extends BaseController {
     /**
      * Iterates through the formConfig elements and creates formfields for
      * each element. This method is recursive.
-     * 
+     *
      * @param oElements:
      *            data object that describes the form fields. This is the
      *            elements node as you can see in the
@@ -213,12 +217,12 @@ export default class DynamicForm extends BaseController {
         if (oUiConfigData[sKey]) {
             sBaseBindingPath = "{uiConfig>/" + sKey;
         }
-    
+
         oSettings.enabled = this.formHelper.getUiStateExpressionBinding(sCurrentDataPath, sCurrentConfigPath, "enabled");
         oSettings.editable = this.formHelper.getUiStateExpressionBinding(sCurrentDataPath, sCurrentConfigPath, "editable");
         oSettings.required = this.formHelper.getUiStateExpressionBinding(sCurrentDataPath, sCurrentConfigPath, "required");
         oSettings.visible = this.formHelper.getUiStateExpressionBinding(sCurrentDataPath, sCurrentConfigPath, "visible");
-        
+
         let oField = null;
         if (oFormConfigElement.type === FormConfigElementType.StringInputField) {
             oField = new Input(sKey, oSettings);
@@ -492,8 +496,9 @@ export default class DynamicForm extends BaseController {
         }
         return arResult[0];
     }
+
     /**
-     * Builds a table. 
+     * Builds a table.
      */
     _buildTable(oPage: Page, sKey: string, oFormConfigElement: any, sCurrentDataPath: string, sCurrentConfigPath: string) {
         let aTableColumns: Array<Column> = [];

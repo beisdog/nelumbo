@@ -1,12 +1,10 @@
 import UIComponent from "sap/ui/core/UIComponent";
-import { support } from "sap/ui/Device";
+import {support} from "sap/ui/Device";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import DynamicForm from "./controller/DynamicForm.controller";
 import DynamicFormController from "./controller/DynamicForm.controller";
 import DynFormRestClient from "./util/DynFormRestClient";
 import ErrorHandler from "./util/ErrorHandler";
-import RestClient from "./util/RestClient";
-
 
 
 /**
@@ -59,7 +57,7 @@ export default class DynamicFormComponent extends UIComponent {
 		this.setModel(new JSONModel(), "formData");
 
 		this.restClient = new DynFormRestClient();
-		
+
 
 	}
 	/**
@@ -121,9 +119,10 @@ export default class DynamicFormComponent extends UIComponent {
 		console.info("DynamicFormComponent.setFormDataModel ENTER");
 		this.setModel(jsonModel, "formData");
 	}
+
 	/**
 	 * Called from outside once the formConfigModel was set
-	 * the UI can be initialised. This method can only be called 
+	 * the UI can be initialised. This method can only be called
 	 * once because when the UI is already initialised and this
 	 * is called again this can lead to errors because i have not found a way yet
 	 * to destroy the previously created UI elements.
@@ -151,7 +150,7 @@ export default class DynamicFormComponent extends UIComponent {
 
 	onControllerInitialized(oController: DynamicFormController) {
 		this.controller = oController;
-		// Just a sloppy workaround because it seems in IE the DynForm component is not 
+		// Just a sloppy workaround because it seems in IE the DynForm component is not
 		// properly initialized when the parent component requests it.
 		if (this.buildFormRequested) {
 			oController.buildFormFromModel(this.getModel("formConfig") as JSONModel);
